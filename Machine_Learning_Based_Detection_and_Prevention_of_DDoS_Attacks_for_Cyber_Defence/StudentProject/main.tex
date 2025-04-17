@@ -1,0 +1,408 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{url}
+\usepackage{multirow}
+
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{Efficiency Measurement of Chronic Kidney Disease
+Prediction Using Machine Learning Techniques}
+
+\author{\IEEEauthorblockN{Md Rabiul Islam and Doina Logofatu}
+
+\IEEEauthorblockA{\textit{Department of Computer Science and Engineering} \\
+\textit{Frankfurt University of Applied Sciences}\\
+Frankfurt am Main, Germany\\
+md.islam3@stud.fra-uas.de, logofatu@fb2.fra-uas.de}}
+\maketitle
+\IEEEpubidadjcol
+\sloppy
+\begin{abstract}
+Machine learning plays a critical role in healthcare by enabling predictive analytics to assist doctors in identifying effective treatments. This study investigates the application of machine learning techniques for predicting chronic kidney disease (CKD) using clinical data. Three classifiers—Random Forest, Naive Bayes, and Decision Tree—are evaluated for their predictive performance. The results demonstrate that Random Forest and Decision Tree classifiers achieve perfect precision, recall, and F1-scores (1.00), while Naive Bayes achieves slightly lower performance with an F1-score of 0.99. These findings highlight the effectiveness of machine learning for early CKD detection, providing tools for improved patient outcomes and timely intervention.
+
+
+\textbf{keywords - }{Chronic Kidney Disease, Machine Learning, Random Forest, Naive Bayes, Decision Tree}
+
+\end{abstract}
+%
+%
+%
+\section{Introduction}
+
+Currently, kidney disease is a significant issue. As a result of the significant number of individuals who are dealing with this illness. Kidney disease is extremely hazardous if not promptly addressed, and potentially fatal. If the doctors have a good tool that can identify patients who are likely to have kidney disease in advance, they can heal the patients in time. Doctors can expedite the healing process by utilizing an effective instrument to predict the presence of patients who are at risk of having kidney disease. A computer-aided diagnosis implement was introduced by Ho, Pai, Pheng, Lee, and Chen \cite{1} through the analysis of images. This system is employed to identify and categorize various phases of CKD. The Glomerular Filtration Rate (GFR) is used to measure kidney injury or dysfunction in chronic kidney disease (CKD). A GFR of less than 60 mL/min per 1.73 m2 for a period exceeding three months or the presence of kidney injury markers are indicative of CKD\cite{2}\cite{3}. Since CKD progresses silently, problems like anemia, cardiovascular disease, and nervous system disorders may already be present when a person seeks medical attention. Between 1990 and 2016, there was an increase in CKD incidence of 89\%, prevalence of 87\%, and mortality of 98\%\cite{4}. Inspired by these studies and discoveries, we have created an interpretable automatic CKD diagnostic system that shows the relative importance of the characteristics that affect the algorithm's decision to identify a patient with CKD or not. Furthermore examined the attribute contribution to the CKD prediction. The work consists of several parts: "Data Analysis and Preprocessing," "Structure of Model," "Results," and "Conclusion and Future work". Data analysis and preprocessing for the dataset included handling missing values, applying feature scaling, and splitting into training and testing sets. Guiding feature engineering and selection, exploratory data analysis guaranteed accurate machine-learning models for the prediction of CKD. The “Structure of Model” section is divided into subsections to discuss the dataset, classifiers, performance measurement, and performance metrics in detail. The "Results" section presents our findings, utilizing the data obtained from classifiers and analyzing the results. The "Conclusion and Future Work" section discusses the research's technical and medical science impact and future improvements.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=7cm,width=8.5cm]{Picture 1.png}
+    \caption{Diagram of the Kidneys Highlighting Areas Affected by CKD.} 
+    \label{fig1}
+\end{figure}
+
+\section{Problem Statement and related work}
+
+Chronic Kidney Disease (CKD) is often undetected in its early stages due to its asymptomatic nature, presenting challenges in medical diagnostics. Many studies have been carried out recently to effectively and precisely identify CKD patients. Using the Decision Tree (DT) method with just 15 attributes out of 24 features, Taznin et al. investigated a CKD dataset and attained 99\% accuracy\cite{5}. Amirgaliye et al. obtained roughly 94.60\% accuracy on the same CKD dataset using a Support Vector Machine (SVM) classifier employing all 24 attributes\cite{6}. Using a sampling method and Multilayer Perceptron (MLP), Yildirim et al. found CKD patients and achieved an F1 score of 99.8\%\cite{7}. Wibawa et al. used K-Nearest Neighbor and AdaBoost to classify CKD patients using 17 attributes from 24 selected using CFS technique, achieving 98.1\% accuracy\cite{8}. This project utilizes predictive analytics on hospital datasets, sourced from platforms like data.world and Kaggle, to facilitate early CKD detection\cite{9}. These datasets, though rich in relevant attributes, require extensive preprocessing to rectify data discrepancies and prepare them for analysis. Previous studies in this domain typically employ machine learning models for classification but often neglect the data heterogeneity and size, which can impact model performance. Our method optimizes predictive accuracy of early CKD diagnosis by rigorous data cleaning and comparing machine learning algorithms, offering a potential tool for clinical practice.
+
+
+\section{Data Analysis and Preprocessing}
+The dataset used in this research is freely available on data.world \cite{9}. The CKD dataset was sourced from the Apollo Hospitals, Managiri, Tamilnadu, India (UCI) machine learning repository. The dataset contains attributes of patients. There are patients with CKD and patients without CKD (NCKD) in the group. Information on the columns present in our dataset is shown in Table 1. The \textbf{df.info()} function is used to display essential details about the DataFrame, including the index of columns, names of columns, the total number of non-null entries for each column, and the data type of each column (e.g., float64, int64, object). This function provides a quick overview of the DataFrame's structure, aiding in data cleaning and preprocessing. The \textbf{df.head(-1)} function displays the first n rows of a dataframe, indicating its dimensionality, with the first row representing rows and the second column representing columns. We first note from \textbf{df.shape} that our dataset comprises 400 rows and 26 columns. We then eliminate the id column, therefore making age the first column. Examining our dataset with \textbf{df.info} reveals that some columns supposed to have numerical values were inadvertently interpreted as objects. First, we convert those columns back to numeric to ensure all columns have the correct data type. Next, we check for null or missing values in our DataFrame by using \textbf{isnull()}, which returns a boolean DataFrame of the same size indicating if values are NA. True indicates a null value, while False indicates a non-null value. NA values, such as None or numpy.NaN, is mapped to True. We then call \textbf{sum()} on the resultant DataFrame to get the total count of null values in each column.
+\begin{table}[htbp]
+\centering
+\caption{Description of Dataset Columns}
+\label{tab:dataset}
+\begin{tabular}{|p{2.5cm}|p{5.5cm}|}
+\hline
+\textbf{Column} & \textbf{Description} \\
+\hline
+age & Age \\
+bp & Blood pressure \\
+sg & Specific gravity \\
+al & Albumin \\
+su & Sugar \\
+rbc & Red blood cells \\
+pc & Pus cell \\
+pcc & Pus cell clumps \\
+ba & Bacteria \\
+bgr & Blood glucose random \\
+bu & Blood urea \\
+sc & Serum creatinine \\
+sod & Sodium \\
+pot & Potassium \\
+hemo & Hemoglobin \\
+pcv & Packed cell volume \\
+wc & White blood cell count \\
+rc & Red blood cell count \\
+htn & Hypertension \\
+dm & Diabetes mellitus \\
+cad & Coronary artery disease \\
+appet & Appetite \\
+pe & Pedal edema \\
+ane & Anemia \\
+class & Predicted Class \\
+\hline
+\end{tabular}
+\end{table}
+
+We sum the True values to get an integer count of null values for each column. For numerical columns with null values, we fill NaNs with the column's average, rounded using pandas. After executing \textbf{df.isnull().sum()}, all numerical columns have zero null values, but text columns still have nulls. For categorical (text) columns, we fill NaNs with the most frequent value in each column. After this, running \textbf{df.isnull().sum()} confirms there are no null values in any column, giving us a complete dataset without missing values.
+
+Next, we check the unique values for each categorical column. We noticed similar data appearing multiple times due to inconsistencies like "yes", " yes", etc. To clean this, we removed leading and trailing whitespace and sanitized the values. Checking the unique values again confirmed that the data is now clean and consistent. We sum the True values to get an integer count of null values for each column. For numerical columns with null values, we fill NaNs with the column's average, rounded using pandas. After executing \textbf{df.isnull().sum()}, all numerical columns have zero null values, but text columns still have nulls. For categorical (text) columns, we fill NaNs with the most frequent value in each column. After this, running \textbf{df.isnull().sum()} confirms there are no null values in any column, giving us a complete dataset without missing values.
+
+Next, we check the unique values for each categorical column. We noticed similar data appearing multiple times due to inconsistencies like "yes", " yes", etc. We removed leading and trailing whitespace to clean this and sanitized the values. Rechecking the unique values confirmed that the data is now clean and consistent.
+
+\begin{table}[htbp]
+\caption{Attribution of the CKD dataset}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Attribute} & \textbf{Abbreviation} & \textbf{V.Type} & \textbf{M.Values} \\
+\hline
+Age & age & in years & 9 \\
+Blood pressure & bp & mmHg & 12 \\
+Specific gravity & sg & nominal & 47 \\
+Albumin & al & nominal (0-5) & 46 \\
+Sugar & su & nominal (0-5) & 49 \\
+Red blood cells & rbc & present or not & 152 \\
+Pus cell & pc & present or not & 4 \\
+Pus cell clumps & pcc & present or not & 4 \\
+Bacteria & ba & present or not & 4 \\
+Blood glucose random & bgr & mgs/dl & 44 \\
+Blood urea & bu & mgs/dl & 19 \\
+Serum creatinine & sc & mgs/dl & 17 \\
+Sodium & sod & mEq/L & ? \\
+Potassium & pot & mEq/L & ? \\
+Hemoglobin & hemo & gms & 52 \\
+Packed cell volume & pcv & numerical & 70 \\
+White blood cell count & wc & cells/cumm & 105 \\
+Red blood cell count & rcc & millions/cmm & 130 \\
+Hypertension & htn & yes or no & 2 \\
+Diabetes mellitus & dm & yes or no & 2 \\
+Coronary artery disease & cad & yes or no & 2 \\
+Appetite & appet & good or poor & 1 \\
+Pedal edema & pe & yes or no & 1 \\
+Anemia & ane & yes or no & 1 \\
+Classification & predicted class & CKD, not CKD & 0 \\
+\hline
+\end{tabular}
+\label{tab1}
+\end{center}
+\end{table}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=6cm,width=8cm]{Picture 3.png}
+    \caption{Missing Data Overview} 
+    \label{fig2}
+\end{figure}
+
+Table 2, lists the attributes, their descriptions, and the missing value data. Figure 3 provides a whole picture of the absent values. From the table, most samples have a missing value of red blood cells; white blood cell count comes second. There are plenty of missing values in the dataset that must be handled. Based on missing value processing, we have produced a collection from the main dataset called "chronickidneydisease.csv". We have just maintained the data in "chronickidneydisease.csv" that lack missing values. This set thus comprises 400 samples, of which 250 are CKD patients and 150 are NCKD patients. We have divided the original dataframe into 80\% training and 20\% testing frame using an 80/20 approach. Here 80\% of the data is used for training and 20\% for testing. Table 3 counts the training and testing samples.
+
+
+\begin{table}
+\centering
+\caption{ Distribution of Sample Sizes for Training and Testing Sets.}
+\label{tab:sample-sizes}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+Name of the subset & Sample & CKD & NCKD & Train & Test \\
+\hline
+chronickidneydisease.csv & 400  & 250 & 150 & 320 & 80 \\
+\hline
+\end{tabular}
+\end{table}
+
+Here we changed all columns with object Dtype—categorical labels—into numerical type. Since in ML, it can only grasp 0 and 1. Using \textbf{scikit-learn LabelEncoder} helps one convert them into numerical numbers. The result then reveals that currently all of the categorical labels are in Numberic form—either 0 or 1. Every value corresponds to a category of the corresponding column. Important note: Here it is evident that \textbf{ LabelEncoder} mapped \textbf{"notCkd"} to 1 and \textbf{"ckd}" to 0. One should keep in mind not confusing analysis using it. Now using \textbf{df.duplicated()} this will produce a dataframe with the same row count with boolean values indicating duplicate rows. We will filter our original dataset using boolean values once we obtain those values. We will add a row when the value is True to a fresh dataframe known \(df_duplicates\). We will ultimately count the rows in our freshly created dataframe in the end. This will be the count of repeated rows in our dataset. Sort the information according to features and target. We are considering the rest as X; from our dataframe we are just deleting the classification column. We are merely considering the classification column from our dataframe column as y. Figure 4 demonstrates Features Correlation.
+\[X = df.drop(columns=['classification'])\]
+\[y = df['classification']\]
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[height=8cm,width=8.5cm]{Picture 4.png}
+    \caption{Features Correlation} 
+    \label{fig3}
+\end{figure}
+
+
+In the output, we would see the classification column is missing by applying this \textbf{X.head()}. But In the output, we would only see the classification column only by applying this \textbf{y.head(-1)}. Then we applied the features correlation. It is a correlation of how one column is dependent on another column and how well it is correlated. 
+There are 400 rows in all. We say that 150 people do not have CKD and 250 people do have CKD. It functions essentially as a chart. This merely shows the present dataset here. The individuals in our current dataset have CKD 62.50\% rather than not CKD 37.50\%.  Figure 5, shows our dataset at this point before predictions are generated. 
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=7.5cm,width=8.5cm]{Picture 5.png}
+    \caption{Initial Distribution of Kidney Patients (Bar Chart and Pie Chart)} 
+    \label{fig4}
+\end{figure}
+
+Scaling or normalizing numerical features (X) in a dataframe helps us to train a model to forecast a numerical target (Y). It guarantees that every feature helps roughly proportionately to the learning process and keeps larger scale features from controlling those with smaller scales. \(scaler.fit_transform(X)\) computes the mean and standard deviation for each feature in your dataset X. Once the scaler is fitted, it is used to transform data. it scales each feature in X by subtracting the mean and dividing by the standard deviation calculated during the fitting phase. 
+This ensures a mean of 0 and a standard deviation of 1 for every element.
+
+
+\[scaler = StandardScaler()\]
+
+
+\[X = scaler.fit_transform(X)\]
+
+After splitting the dataset into training and test sets, the original dataframe will be split 80\% training and 20\% testing frame below.
+
+\[train_test_split(X, y, test_size=0.2, random_state=42)\]
+
+Then proceed with printing the results apposing the code below-
+
+\[print(len(X_train), len(X_test))\]
+Output: 320 80
+
+
+
+\section{Structure of Model }
+
+In a supervised learning system, training and testing depend much on categorization algorithms. Classifier systems use knowledge gained from the training set to produce the intended output in the testing set\cite{8} \cite{9}. We have covered in this subsection the classifier we applied to categorize the CKD data. A classifier is a type of machine learning method used for predefined classifications of data. In this case, the classifier will decide whether the patient has CKD using her attributes as input. 
+
+\begin{figure}
+\centering
+\includegraphics[height=5.5cm,width=7.5cm]{Picture 2.png}
+\caption{Proposed model utilizing ML classification algorithms.} 
+\label{fig5}
+\end{figure}
+In this project, we employ three machine learning classifiers to predict chronic kidney disease: Random Forest Classifier, Naive Bayes Classifier, and Decision Tree Classifier. The Random Forest Classifier, an ensemble learning method, constructs multiple decision trees and aggregates their predictions to enhance accuracy and control overfitting. The Naive Bayes Classifier, based on Bayes' theorem, assumes independence between predictors and is particularly effective for high-dimensional datasets due to its simplicity and efficiency. The Decision Tree Classifier uses a tree-like model to make decisions by recursively splitting the dataset based on feature values, offering an intuitive and easy-to-interpret approach. To evaluate these classifiers, we compare their performance using metrics such as accuracy, precision, recall, F1-score, and the area under the ROC curve (AUC), aiming to identify the most effective model for predicting chronic kidney disease and thus aiding in early diagnosis and treatment planning. \cite{5}.
+
+\subsubsection{Random Forest Classifier} 
+
+Figure 6, illustrates the Python code used for training and evaluating a Random Forest Classifier for predicting chronic kidney disease. The process involves instantiating the classifier, training it with the fit() method on the training dataset \((X_train, y_train)\), and generating predictions on the test dataset \((X_test)\) using the predict() method. The evaluation phase calculates the accuracy with \(accuracy_score()\), generates a confusion matrix with \(confusion_matrix()\), and provides a detailed classification report using \(classification_report()\), which includes precision, recall, F1-score, and support for each class. The code outputs the overall accuracy and the classification report, demonstrating the classifier's high performance and providing insights into its effectiveness in distinguishing between different classes of chronic kidney diseases.
+
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 6.png}
+\caption{Random Forest Classifier Training and Evaluation Code} \label{fig6}
+\end{figure}
+
+\subsubsection{Naive Bayes Classifier} The process begins with the instantiation of the classifier using GaussianNB(), followed by training it on the training dataset \((X_train, y_train)\) using the fit() method. Predictions are then generated for the test dataset \((X_test)\) with the predict() method. The evaluation phase includes calculating the accuracy with \(accuracy_score()\), generating a confusion matrix with \(confusion_matrix()\), and producing a detailed classification report with \(classification_report()\), which covers precision, recall, F1-score, and support for each class. The code outputs the overall accuracy and the classification report, highlighting the classifier's performance and its capability to accurately distinguish between different classes of chronic kidney disease. Figure 7, displays the Python code used to train and evaluate a Naive Bayes Classifier for predicting chronic kidney disease. 
+
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 7.png}
+\caption{ Code for Training and Evaluating the Naive Bayes Classifier} \label{fig7}
+\end{figure}
+
+\subsubsection{Decision Tree Classifier} Figure 8, illustrates the Python code used to train and evaluate a Decision Tree Classifier for predicting chronic kidney disease. The process starts with the instantiation of the classifier using DecisionTreeClassifier(), followed by training it on the training dataset \((X_train, y_train)\) with the fit() method. Predictions for the test dataset \((X_test)\) are then generated using the predict() method. The evaluation phase involves calculating the accuracy with \(accuracy_score()\), generating a confusion matrix with \(confusion_matrix()\), and providing a detailed classification report with \(classification_report()\), which includes precision, recall, F1-score, and support for each class. The code outputs the overall accuracy and the classification report, demonstrating the classifier's performance and its effectiveness in distinguishing between different classes of chronic kidney disease.
+
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 8.png}
+\caption{Code for Training and Evaluating the Decision Tree Classifier} 
+\label{fig8}
+\end{figure}
+
+\section{Performance Measurement}
+In this study, precision, recall, F1-score, and support are the metrics used to assess the effectiveness of the suggested methods: These represent the evaluation phase output for the classifiers in predicting chronic kidney disease. This output includes two key components: the model's overall accuracy and a detailed classification report.
+
+\begin{itemize}
+    \item \textbf{Accuracy} (ACC) is the overall success rate of the classifier defined as:
+\end{itemize}
+
+\begin{equation*}
+\text{ACC} = \frac{\text{TP} + \text{TN}}{\text{TP} + \text{TN} + \text{FP} + \text{FN}}
+\end{equation*}
+where TP is the number of true positives, TN is the number of true negatives, FP is the number of false positives, and FN is the number of false negatives. Accuracy represents the proportion of correctly classified instances (both true positives and true negatives) out of the total instances in the dataset.
+
+\begin{itemize}
+    \item \textbf{Precision} (P) is the measure of the accuracy of the positive predictions made by the classifier, defined as:
+\end{itemize}
+\begin{equation*}
+\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}
+\end{equation*}
+where TP is the number of true positives, and FP is the number of false positives. True positives (TP) represent the instances correctly identified as positive, while false positives (FP) are the instances incorrectly identified as positive. Precision quantifies the proportion of correctly identified positive instances out of all instances that were predicted to be positive, indicating how reliable the positive predictions of the classifier are.
+
+\begin{itemize}
+    \item \textbf{Recall} (R) is the measure of the ability of the classifier to identify all relevant instances in the dataset, defined as:
+\end{itemize}
+\begin{equation*}
+\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}
+\end{equation*}
+where TP is the number of true positives, and FN is the number of false negatives. True positives (TP) represent the instances correctly identified as positive, while false negatives (FN) are the instances incorrectly identified as negative. Recall quantifies the proportion of correctly identified positive instances out of all actual positive instances, indicating the classifier's ability to capture all relevant positive cases in the dataset.
+
+\begin{itemize}
+    \item \textbf{F1 Score} Defined as the harmonic mean of precision and recall, (F1) balances the two measurements:
+\end{itemize}
+\begin{equation*}
+\text{F1 Score} = \frac{2 \cdot \text{Precision} \cdot \text{Recall}}{\text{Precision} + \text{Recall}}
+\end{equation*}
+The F1 Score is a metric that combines precision and recall, providing a comprehensive measure of a classifier's accuracy in terms of false positives and false negatives, especially useful in imbalanced class distributions.
+
+\subsubsection{Performance Metrics}
+
+The classification ML model's performance is evaluated using various metrics such as accuracy, AUC, precision, and recall, with the confusion matrix being the most intuitive. The confusion matrix and performance metrics formulas offer a method for assessing the effectiveness of classifiers. For the Random Forest Classifier, the confusion matrix distinguishes true positives (TP) and true negatives (TN) from false positives (FP) and false negatives (FN), enabling the calculation of precision, recall, and F1-score, and highlighting its robustness and high accuracy.
+
+ 
+\begin{figure}
+\centering
+\includegraphics[height=4cm,width=9cm]{Picture 9.png}
+\caption{Confusion matrix and performance metrics formula.} 
+\label{fig9}
+\end{figure}
+
+The Naive Bayes Classifier, based on Bayes' theorem and assuming predictor independence, uses the confusion matrix to derive these metrics, excelling in high-dimensional data with high precision and recall. The Decision Tree Classifier splits the dataset to maximize information gain, with the confusion matrix providing essential counts for precision, recall, and F1-score calculations, noted for its interpretability and effectiveness with numerical and categorical data. Overall, the confusion matrix and metrics like accuracy, precision, recall, and F1-score are crucial for quantifying the predictive power and reliability of these classifiers in predicting chronic kidney disease.
+
+\begin{figure}
+\centering
+\includegraphics[height=2.5cm,width=9cm]{Picture 10.png}
+\caption{Code of Confusion Matrix Heatmap for Random Forest Classifier } \label{fig10}
+\end{figure}
+
+
+\section{Experimentation Results}
+
+The results of three machine learning techniques are compared in the experiments. All machine learning techniques are trained and tested by the proposed method. The experimentation process for the project was carried out in a Jupyter Notebook environment, as indicated by the Visual Studio Code interface.
+The experimentation process began with data scaling using the \textbf{StandardScaler} to ensure each feature contributed proportionately to the learning process, as shown in the first figure. Next, the dataset was split into 80\% training and 20\% testing sets,resulting in 320 training instances and 80 testing instances. Using \(train_test_split(X, y, test_size=0.2, random_state=42)\), we ensure the dataset is divided appropriately, resulting in 320 training instances and 80 testing instances.
+The performance of the three classifiers—Random Forest, Naive Bayes, and Decision Tree—was evaluated using precision, recall, F1-score, and accuracy metrics. The results are summarized in the table IV classification reports below.
+
+\begin{table}[h!]
+\centering
+\caption{Classification results}
+\label{tab:classification_reports}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{Classifier} & \textbf{Metric} & \textbf{Class 0} & \textbf{Class 1} & \textbf{Overall} \\ \hline
+\multirow{5}{*}{Random Forest} & Precision & 1.00 & 1.00 & Accuracy: 1.00 \\ \cline{2-5} 
+ & Recall & 1.00 & 1.00 & Macro Avg: 1.00 \\ \cline{2-5} 
+ & F1-Score & 1.00 & 1.00 & Weighted Avg: 1.00 \\ \cline{2-5} 
+ & Support & 52 & 28 & Total: 80 \\ \hline
+\multirow{5}{*}{Naive Bayes} & Precision & 1.00 & 0.97 & Accuracy: 0.99 \\ \cline{2-5} 
+ & Recall & 0.98 & 1.00 & Macro Avg: 0.99 \\ \cline{2-5} 
+ & F1-Score & 0.99 & 0.98 & Weighted Avg: 0.99 \\ \cline{2-5} 
+ & Support & 52 & 28 & Total: 80 \\ \hline
+\multirow{5}{*}{Decision Tree} & Precision & 1.00 & 1.00 & Accuracy: 1.00 \\ \cline{2-5} 
+ & Recall & 1.00 & 1.00 & Macro Avg: 1.00 \\ \cline{2-5} 
+ & F1-Score & 1.00 & 1.00 & Weighted Avg: 1.00 \\ \cline{2-5} 
+ & Support & 52 & 28 & Total: 80 \\ \hline
+\end{tabular}
+\end{table}
+
+
+The Random Forest Classifier was then trained and evaluated, achieving an accuracy of 1.00 with perfect precision, recall, and F1-scores, and visualized in the corresponding confusion matrix heatmap in Figure 11.
+
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 11.png}
+\caption{Confusion Matrix Heatmap for Random Forest Classifier} \label{fig11}
+\end{figure}
+
+Similarly, the Naive Bayes Classifier, detailed in the fifth figure, achieved an accuracy of 0.99, with high precision, recall, and F1-scores, and its results are illustrated in Figure 12 confusion matrix heatmap. 
+
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 12.png}
+\caption{Confusion Matrix Heatmap for Naive Bayes Classifier} \label{fig12}
+\end{figure}
+The Decision Tree Classifier, achieving an accuracy of 1.00 with perfect precision, recall, and F1-scores, and its confusion matrix is shown in Figure 13.
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 13.png}
+\caption{Confusion Matrix Heatmap for Decision Tree Classifier} \label{fig13}
+\end{figure}
+
+Finally, the overall accuracy comparison of the three classifiers was visualized in a bar chart, highlighting the performance differences, with the Random Forest and Decision Tree classifiers achieving 1.00 accuracy and the Naive Bayes classifier achieving 0.99. This comprehensive approach demonstrates the effectiveness and reliability of the classifiers in predicting chronic kidney disease.
+
+\begin{figure}
+\centering
+\includegraphics[height=7cm,width=8.5cm]{Picture 14.png}
+\caption{Accuracy Comparison of Classifiers} \label{fig14}
+\end{figure}
+
+
+\section{Conclusion and Future Work}
+
+Chronic kidney disease (CKD) is a major global health issue, often exacerbated by a lack of experienced nephrologists and complex machine-learning models. In this paper, we present the predictive models by using machine learning methods including Random Forest, Naive Bayes, and decision tree classifiers to predict chronic kidney disease. The classification reports for the Random Forest and Decision Tree classifiers show perfect performance with an accuracy of 1.00 and perfect precision, recall, and F1 scores for both classes. This indicates that these classifiers made no errors in distinguishing between the classes. The Naive Bayes classifier, while slightly lower in performance with an accuracy of 0.99, still demonstrates high precision, recall, and F1-scores, indicating its strong predictive capability.
+These results highlight the effectiveness of the Random Forest and Decision Tree classifiers in predicting chronic kidney disease, providing reliable tools for early diagnosis and treatment planning. The Naive Bayes classifier, despite its slightly lower accuracy, remains a viable option due to its simplicity and efficiency, particularly in handling high-dimensional data.
+
+Future work can expand on this study by incorporating larger, more diverse datasets to enhance model generalizability and exploring additional machine learning algorithms like support vector machines, gradient boosting, or deep learning for improved performance. Implementing feature selection or dimensionality reduction techniques can identify critical CKD predictors, enhancing model interpretability. Additionally, integrating these predictive models into clinical decision support systems (CDSS) could facilitate real-time CKD detection in clinical settings. Early identification of CKD through these models would allow for timely intervention, including appropriate diet and medication adjustments, potentially slowing disease progression and improving patient outcomes. Lastly, longitudinal studies could help develop models that predict CKD progression and outcomes over time.
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+
+\begin{thebibliography}{14}
+\bibitem{1}
+C. -Y. Ho et al., "Ultrasonography Image Analysis for Detection and Classification of Chronic Kidney Disease," 2012 Sixth International Conference on Complex, Intelligent, and Software Intensive Systems, Palermo, Italy, 2012, pp. 624-629, doi: 10.1109/CISIS.2012.180.
+
+\bibitem{2}
+Wouters, O., O'Donoghue, D., Ritchie, J. et al. Early chronic kidney disease: diagnosis, management and models of care. Nat Rev Nephrol 11, 491–502 (2015). https://doi.org/10.1038/nrneph.2015.85.
+
+\bibitem{3}
+ERA-EDTA Council , ERACODA Working Group , Chronic kidney disease is a key risk factor for severe COVID-19: a call to action by the ERA-EDTA, Nephrology Dialysis Transplantation, Volume 36, Issue 1, January 2021, Pages 87–94, https://doi.org/10.1093/ndt/gfaa314. 
+
+\bibitem{4}
+Xie, Y. et al. Analysis of the Global Burden of Disease study highlights the global, regional, and national trends of chronic kidney disease epidemiology from 1990 to 2016. Kidney Int. 94, 567–581 (2018), https://doi.org/10.1016/j.kint.2018.04.011.
+
+\bibitem{5}
+N. Tazin, S. A. Sabab and M. T. Chowdhury, "Diagnosis of Chronic Kidney Disease using effective classification and feature selection technique," 2016 International Conference on Medical Engineering, Health Informatics and Technology (MediTec), Dhaka, Bangladesh, 2016, pp. 1-6, doi: 10.1109/MEDITEC.2016.7835365.
+
+\bibitem{6}
+Y. Amirgaliyev, S. Shamiluulu and A. Serek, "Analysis of Chronic Kidney Disease Dataset by Applying Machine Learning Methods," 2018 IEEE 12th International Conference on Application of Information and Communication Technologies (AICT), Almaty, Kazakhstan, 2018, pp. 1-4, doi: 10.1109/ICAICT.2018.8747140.
+
+\bibitem{7}
+Polat, H., Danaei Mehr, H. \& Cetin, A. Diagnosis of Chronic Kidney Disease Based on Support Vector Machine by Feature Selection Methods. J Med Syst 41, 55 (2017). https://doi.org/10.1007/s10916-017-0703-x.
+
+\bibitem{8}
+M. S. Wibawa, I. M. D. Maysanjaya and I. M. A. W. Putra, "Boosted classifier and features selection for enhancing chronic kidney disease diagnose," 2017 5th International Conference on Cyber and IT Service Management (CITSM), Denpasar, Indonesia, 2017, pp. 1-6, doi: 10.1109/CITSM.2017.8089245.
+
+\bibitem{9}
+Rubini,L., Soundarapandian,P., and Eswaran,P.. (2015). Chronic Kidney Disease. UCI Machine Learning Repository. https://doi.org/10.24432/C5G020.
+
+\end{thebibliography}
+\end{document}
